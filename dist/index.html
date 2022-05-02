@@ -11,7 +11,20 @@
     <title>Weather App</title>
 </head>
 <body>
-    <div id='content'>Hello world!</div>
-    <script src='main.js'></script>
+    <div id="content">
+        <form>
+            <input type="text" id="search-input" placeholder="Enter a city name...">
+            <button type="submit" id="search-btn">Search</button>
+        </form>
+        <div id="weather-container">
+            <div id="city-info">
+                <h1 id="city-name"></h1>
+            </div>
+            <div id="weather-info">
+                <h1 id="weather-name"></h1>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
