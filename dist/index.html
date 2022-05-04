@@ -8,22 +8,65 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
-    <title>Weather App</title>
+    <link rel="icon" 
+      type="image/png" 
+      href="../src/images/logo.png">
+    <title>Weather Meister</title>
 </head>
 <body>
+    <header>
+        <nav>
+            <i class="fa-brands fa-searchengin"></i>
+            <h1 id="logo">Weather Meister</h1>
+        </nav>
+    </header>
     <div id="content">
-        <form>
-            <input type="text" id="search-input" placeholder="Enter a city name...">
-            <button type="submit" id="search-btn">Search</button>
-        </form>
-        <div id="weather-container">
-            <div id="city-info">
-                <h1 id="city-name"></h1>
+        <main>
+            <form>
+                <div id="form-left">
+                    <label for="search-input" id="search-input-label">Enter Location:</label>
+                    <input type="text" id="search-input" name="search-input" placeholder="Enter a city name...">
+                    <span id="error">
+                        Location not found. <br>
+                        Search must be in the form of "City", "City, State" or "City, Country".
+                    </span>
+                </div>
+                <button type="submit" id="search-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+            <div id="weather-container">
+                <div id="city-info">
+                    <h1 id="city-name"></h1>
+                </div>
+                <div id="weather-info">
+                    <div class="weather-card-main">
+                        <i class="fa-solid" id="weather-icon"></i>
+                        <h1 id="weather-name">Weather</h1>
+                        <h1 id="temp"></h1>
+                        <h1 id="temp-label">Temperature</h1>
+                        <button id="convert-temp">&#8451; &#8596; &#8457;</button>
+                    </div>
+                    <div class="weather-card" id="extra-info-card">
+                        <div class="extra-info">
+                            <i class="fa-solid fa-temperature-three-quarters"></i>
+                            <h3 class="extra-info-title">Feels like</h3>
+                            <p class="extra-info-metric" id="feels-like"></p>
+                        </div>
+                        <div class="extra-info">
+                            <i class="fa-solid fa-wind"></i>
+                            <h3 class="extra-info-title">Wind Speed</h3>
+                            <p class="extra-info-metric" id="wind"></p>
+                        </div>
+                        <div class="extra-info">
+                            <i class="fa-solid fa-droplet"></i>
+                            <h3 class="extra-info-title">Humidity</h3>
+                            <p class="extra-info-metric" id="humidity"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="weather-info">
-                <h1 id="weather-name"></h1>
-            </div>
-        </div>
+        </main>
     </div>
     <script src="main.js"></script>
 </body>
