@@ -175,7 +175,9 @@ function detectTempConversion() {
 }
 
 function msToKmh(ms) {
-    return ms * 3.6;
+    let kmh = ms * 3.6;
+    kmh = kmh.toFixed(2);
+    return kmh;
 }
 
 function displayWeather(data) {
