@@ -110,9 +110,8 @@ button:hover {
 }
 
 #weather-info {
-    display: flex;
-    justify-content: space-around;
-    height: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
     width: 500px;
 }
 

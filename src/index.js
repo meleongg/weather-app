@@ -28,10 +28,13 @@ const humidityContainer = document.getElementById("humidity");
 
 const convertButton = document.getElementById("convert-temp");
 
-let celsius = false; 
+let celsius = true; 
+let firstDetect = true;
 
 searchBtn.addEventListener("click", (e) => {
+    celsius = true;
     e.preventDefault();
+    error.style.display = "none";
     getWeather();
 });
 
@@ -41,7 +44,8 @@ async function getGeocode(location) {
         const geoCodeData = await geoCodeResponse.json();
         const geoCode = geoCodeData[0];
         return geoCode;
-    } catch (reject) {
+    } catch (err) {
+        console.log(err);
         error.display.style = "block";
     }
 }
@@ -61,7 +65,8 @@ async function getWeatherData(coords) {
         const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=84dc4cf872f4ca955eaa6c04b09efd71`, {mode: "cors"});
         const weatherData = await weatherResponse.json();
         return weatherData;
-    } catch (reject) {
+    } catch (err) {
+        console.log(err);
         error.display.style = "block";
     }
 }
@@ -71,7 +76,7 @@ function chooseBg(weather) {
 
     if (weather.includes("partly")) {
         content.style.backgroundImage = `url(${partlyCloudy})`;
-    } else if (weather.includes("sun")) {
+    } else if (weather.includes("sun") || weather.includes("clear")) {
         content.style.backgroundImage = `url(${sunny})`;
     } else if (weather.includes("cloud")) {
         content.style.backgroundImage = `url(${overcast})`;
@@ -91,7 +96,7 @@ function chooseWeatherIcon(weather) {
 
     if (weather.includes("partly")) {
         weatherIcon.classList.add("fa-cloud-sun");
-    } else if (weather.includes("sun")) {
+    } else if (weather.includes("sun") || (weather.includes("clear"))) {
         weatherIcon.classList.add("fa-sun");
     } else if (weather.includes("cloud")) {
         weatherIcon.classList.add("fa-cloud");
@@ -106,50 +111,62 @@ function kelvinToCelsius(kelv) {
     return cels;
 }
 
-function degreeify(temp) {
-    const celsiusConversion = -Math.round(-(temp - 273.15));
-    celsius = true;
+function celsify(temp) {
+    return `${temp}\u00B0C`;
+}
 
-    return `${celsiusConversion}\u00B0`;
+function fahrfy(temp) {
+    return `${temp}\u00B0F`;
 }
 
 function celsiusToFahr(cels) {
     const fahr = -Math.round(-((cels * 9.0/5.0) + 32.0));
-    console.log(fahr)
+
     return fahr;
 }
 
 function fahrToCelsius(fahr) {
     const cels = -Math.round(-((fahr - 32.0) * 5.0/9.0));
-    console.log(cels)
+
     return cels;
 }
 
 function updateTemp(temp) {
-    tempContainer.innerText = `${temp}\u00B0`;
+    tempContainer.innerText = temp;
 }
 
 function updateFeelsLike(feelsLike) {
-    feelsLikeContainer.innerText = `${feelsLike}\u00B0`;
+    feelsLikeContainer.innerText = feelsLike;
 }
 
-function detectTempConversion(temp, feelsLike) {
-    let newTemp = temp;
-    let newFeelsLike = feelsLike;
-
+function detectTempConversion() {
     convertButton.addEventListener("click", () => {
+        let oldFeelsLike = feelsLikeContainer.innerText;
+        oldFeelsLike = oldFeelsLike.substring(0, oldFeelsLike.length - 2);
+        let oldTemp = tempContainer.innerText;
+        oldTemp = oldTemp.substring(0, oldTemp.length - 2);
+
+        let newTemp;
+        let newFeelsLike;
+        let newTempStr;
+        let newFeelsLikeStr
+
         if (celsius) {
-            newTemp = celsiusToFahr(temp);
-            newFeelsLike = celsiusToFahr(feelsLike);
+            newTemp = celsiusToFahr(oldTemp);
+            newFeelsLike = celsiusToFahr(oldFeelsLike);
             celsius = false;
+            newTempStr = fahrfy(newTemp);
+            newFeelsLikeStr = fahrfy(newFeelsLike);
         } else {
-            newTemp = fahrToCelsius(temp);
-            newFeelsLike = fahrToCelsius(feelsLike);
+            newTemp = fahrToCelsius(oldTemp);
+            newFeelsLike = fahrToCelsius(oldFeelsLike);
             celsius = true;
+            newTempStr = celsify(newTemp);
+            newFeelsLikeStr = celsify(newFeelsLike);
         }
 
-        updateTemp(newTemp);
-        updateFeelsLike(newFeelsLike);
+        updateTemp(newTempStr);
+        updateFeelsLike(newFeelsLikeStr);
     });
 }
 
@@ -159,14 +176,14 @@ function displayWeather(data) {
     cityName.innerText = cityNameStr;
 
     const rawFeelsLike = data.main.feels_like;
-    const feelsLike = degreeify(rawFeelsLike);
     const celsiusFeelsLike = kelvinToCelsius(rawFeelsLike);
+    const feelsLike = celsify(celsiusFeelsLike);
 
     const humidity = data.main.humidity;
 
     const rawTemp = data.main.temp;
-    const temp = degreeify(rawTemp); 
     const celsiusTemp = kelvinToCelsius(rawTemp);
+    const temp = celsify(celsiusTemp); 
 
     const windSpeed = data.wind.speed; 
 
@@ -185,8 +202,10 @@ function displayWeather(data) {
     humidityContainer.innerText = `${humidity}%`;
     windSpeedContainer.innerText = `${windSpeed}m/s`;
 
-    // fix so this works
-    detectTempConversion(celsiusTemp, celsiusFeelsLike);
+    if (firstDetect) {
+        detectTempConversion();
+        firstDetect = false; 
+    }
 
     weatherContainer.style.display = "block";
 }
