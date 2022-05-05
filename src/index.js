@@ -5,6 +5,7 @@ import sunny from "./images/sunny.jpeg";
 import overcast from "./images/overcast.jpeg";
 import partlyCloudy from "./images/partly-cloudy.jpeg";
 import rainy from "./images/rainy.jpeg";
+import logo from "./images/logo.png"
 
 const weatherContainer = document.getElementById("weather-container");
 weatherContainer.style.display = "none";
@@ -28,6 +29,9 @@ const humidityContainer = document.getElementById("humidity");
 
 const convertButton = document.getElementById("convert-temp");
 
+const logoLink = document.getElementById("logo");
+logoLink.href = logo;
+
 let celsius = true; 
 let firstDetect = true;
 
@@ -40,7 +44,7 @@ searchBtn.addEventListener("click", (e) => {
 
 async function getGeocode(location) {
     try {
-        const geoCodeResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${location}&appid=84dc4cf872f4ca955eaa6c04b09efd71`, {mode: "cors"});
+        const geoCodeResponse = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${location}&appid=84dc4cf872f4ca955eaa6c04b09efd71`, {mode: "cors"});
         const geoCodeData = await geoCodeResponse.json();
         const geoCode = geoCodeData[0];
         return geoCode;
@@ -170,6 +174,10 @@ function detectTempConversion() {
     });
 }
 
+function msToKmh(ms) {
+    return ms * 3.6;
+}
+
 function displayWeather(data) {
     const cityNameStr = `${data.name}, ${data.sys.country}`;
 
@@ -185,7 +193,8 @@ function displayWeather(data) {
     const celsiusTemp = kelvinToCelsius(rawTemp);
     const temp = celsify(celsiusTemp); 
 
-    const windSpeed = data.wind.speed; 
+    const rawWindSpeed = data.wind.speed; 
+    const windSpeed = msToKmh(rawWindSpeed);
 
     const weather = data.weather[0];
     const weatherStr = weather.description;
@@ -200,7 +209,7 @@ function displayWeather(data) {
     feelsLikeContainer.innerText = feelsLike;
     tempContainer.innerText = temp;
     humidityContainer.innerText = `${humidity}%`;
-    windSpeedContainer.innerText = `${windSpeed}m/s`;
+    windSpeedContainer.innerText = `${windSpeed}km/h`;
 
     if (firstDetect) {
         detectTempConversion();
